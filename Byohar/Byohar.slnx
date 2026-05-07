@@ -1,0 +1,17 @@
+<Solution>
+  <Folder Name="/src/" />
+  <Folder Name="/src/API/">
+    <Project Path="Byohar.Api/Byohar.Api.csproj" />
+  </Folder>
+  <Folder Name="/src/Core/">
+    <Project Path="Byohar.Application/Byohar.Application.csproj" />
+    <Project Path="Byohar.Domain/Byohar.Domain.csproj" />
+  </Folder>
+  <Folder Name="/src/Infrastructure/">
+    <Project Path="Byohar.Infrastructure/Byohar.Infrastructure.csproj" />
+    <Project Path="Byohar.Persistance/Byohar.Persistance.csproj" />
+  </Folder>
+  <Folder Name="/src/Shared/">
+    <Project Path="Byohar.Shared/Byohar.Shared.csproj" />
+  </Folder>
+</Solution>
