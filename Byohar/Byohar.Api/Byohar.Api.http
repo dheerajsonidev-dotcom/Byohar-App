@@ -1,0 +1,6 @@
+@Byohar.Api_HostAddress = http://localhost:5012
+
+GET {{Byohar.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
