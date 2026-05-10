@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using Byohar.Application.Interfaces.Persistence;
 using Byohar.Application.Requests.Users;
-using Byohar.Application.Responses.Users;
+using Byohar.Application.Responses;
 using Byohar.Domain.Entities.Identity;
 using Byohar.Infrastructure.Extensions;
 using Byohar.Shared.Wrapper;

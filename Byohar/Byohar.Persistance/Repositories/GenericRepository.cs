@@ -1,6 +1,6 @@
 ﻿using Byohar.Application.Interfaces.Persistence;
 using Byohar.Domain.Common;
-using Byohar.Persistence.Contexts;
+using Byohar.Persistance.Contexts;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;

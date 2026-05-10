@@ -6,7 +6,7 @@ using Byohar.Application.Hubs.RolePermission;
 using Byohar.Application.Interfaces.Common;
 using Byohar.Application.Interfaces.User;
 using Byohar.Infrastructure.Services.Common;
-using Byohar.Persistence.Contexts;
+using Byohar.Persistance.Contexts;
 using Byohar.Shared.Permission;
 using FluentValidation;
 using FluentValidation.AspNetCore;

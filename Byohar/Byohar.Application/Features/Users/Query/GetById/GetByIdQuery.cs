@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Byohar.Application.Interfaces.Persistence;
-using Byohar.Application.Responses.Users;
+using Byohar.Application.Responses;
 using Byohar.Domain.Entities.Identity;
 using Byohar.Shared.Wrapper;
 using MediatR;

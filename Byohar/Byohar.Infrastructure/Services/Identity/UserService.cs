@@ -17,7 +17,7 @@ using Byohar.Application.Validators.Identity;
 using Byohar.Domain.Entities.Identity;
 using Byohar.Infrastructure.Extensions;
 using Byohar.Infrastructure.Specifications;
-using Byohar.Persistence.Contexts;
+using Byohar.Persistance.Contexts;
 using Byohar.Shared.Constants.User;
 using Byohar.Shared.Wrapper;
 using Microsoft.AspNetCore.Http;
@@ -45,12 +45,12 @@ public class UserService : IUserService
     private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICurrentUserService _currentUserService;
-    private readonly IEmailSender _mailService;
-    private readonly IExcelService _excelService;
-    private readonly IUploadService _uploadService;
+    //private readonly IEmailSender _mailService;
+    //private readonly IExcelService _excelService;
+    //private readonly IUploadService _uploadService;
     private readonly IDistributedCache _cache;
     private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly IEmailPopulateBody _emailPopulateBody;
+    //private readonly IEmailPopulateBody _emailPopulateBody;
     private readonly AppConfiguration _appConfig;
 
     public UserService(
@@ -61,13 +61,13 @@ public class UserService : IUserService
         ApplicationDbContext dbContext,
         IUnitOfWork unitOfWork,
         ICurrentUserService currentUserService,
-        IEmailSender mailService,
-        IExcelService excelService,
-        IUploadService uploadService,
+        //IEmailSender mailService,
+        //IExcelService excelService,
+        //IUploadService uploadService,
         IOptions<AppConfiguration> appConfig,
         IDistributedCache cache,
-        IHttpContextAccessor httpContextAccessor,
-        IEmailPopulateBody emailPopulateBody)
+        IHttpContextAccessor httpContextAccessor)
+        //IEmailPopulateBody emailPopulateBody)
     {
         _unitOfWork = unitOfWork;
         _currentUserService = currentUserService;
@@ -76,12 +76,12 @@ public class UserService : IUserService
         _roleManager = roleManager;
         _localizer = localizer;
         _dbContext = dbContext;
-        _mailService = mailService;
-        _excelService = excelService;
-        _uploadService = uploadService;
+        //_mailService = mailService;
+        //_excelService = excelService;
+        //_uploadService = uploadService;
         _cache = cache;
         _httpContextAccessor = httpContextAccessor;
-        _emailPopulateBody = emailPopulateBody;
+        //_emailPopulateBody = emailPopulateBody;
         _appConfig = appConfig.Value;
     }
 
@@ -121,17 +121,17 @@ public class UserService : IUserService
             if (request.TenantId.HasValue)
                 user.TenantId = request.TenantId.Value;
 
-            if (request.ProfilePicture?.FileName != null)
-            {
-                var profilePictureUrl = await _uploadService.UploadAsync(new UploadRequest
-                {
-                    Path = FileUploadUrl.Profile,
-                    FileBytes = request.ProfilePicture.Content,
-                    FileName = request.ProfilePicture.FileName
-                });
+            //if (request.ProfilePicture?.FileName != null)
+            //{
+            //    var profilePictureUrl = await _uploadService.UploadAsync(new UploadRequest
+            //    {
+            //        Path = FileUploadUrl.Profile,
+            //        FileBytes = request.ProfilePicture.Content,
+            //        FileName = request.ProfilePicture.FileName
+            //    });
 
-                user.ProfilePictureDataUrl = profilePictureUrl.Data;
-            }
+            //    user.ProfilePictureDataUrl = profilePictureUrl.Data;
+            //}
 
             if (!string.IsNullOrWhiteSpace(request.PhoneNumber))
             {
@@ -155,9 +155,18 @@ public class UserService : IUserService
                 {
                     AddRelatedEntities(user, request);
                     await _userManager.AddToRolesAsync(user, request.Roles);
-                    await SendVerificationEmail(request.Email, password, request.Origin);
+                    //await SendVerificationEmail(request.Email, password, request.Origin);
 
-                    return await Result<UserResponse>.SuccessAsync(new UserResponse { Id = user.Id, UserName = user.UserName, Password = password }, string.Format(_localizer["User {0} Registered."], user.UserName));
+                    return await Result<UserResponse>.SuccessAsync(new UserResponse
+                    {
+                        Id = user.Id,
+                        UserName = user.UserName,
+                        FirstName = user.FirstName,
+                        LastName = user.LastName,
+                        Email = user.Email,
+                        IsActive = user.IsActive,
+                        Password = password
+                    }, string.Format(_localizer["User {0} Registered."], user.UserName));
                 }
                 else
                 {
@@ -169,16 +178,16 @@ public class UserService : IUserService
                 return await Result<UserResponse>.FailAsync(string.Format(_localizer["Email {0} is already registered."], request.Email));
             }
         }
-        catch
+        catch (Exception ex)
         {
-            return await Result<UserResponse>.FailAsync(string.Format(_localizer["Something went wrong"]));
+            return await Result<UserResponse>.FailAsync(ex.Message);
         }
 
     }
 
     private void AddRelatedEntities(ApplicationUser user, RegisterRequest request)
     {
-        throw new NotImplementedException();
+        
     }
 
     public async Task<IResult> UpdateUser(UpdateUserRequest request)
@@ -193,21 +202,21 @@ public class UserService : IUserService
             user.LastName = request.LastName;
             user.PhoneNumber = request.PhoneNumber;
 
-            if (request.ProfilePicture?.FileName != null)
-            {
-                var profilePictureUrl = await _uploadService.UploadAsync(new UploadRequest
-                {
-                    Path = FileUploadUrl.Profile,
-                    FileBytes = request.ProfilePicture.Content,
-                    FileName = request.ProfilePicture.FileName
-                });
+            //if (request.ProfilePicture?.FileName != null)
+            //{
+            //    var profilePictureUrl = await _uploadService.UploadAsync(new UploadRequest
+            //    {
+            //        Path = FileUploadUrl.Profile,
+            //        FileBytes = request.ProfilePicture.Content,
+            //        FileName = request.ProfilePicture.FileName
+            //    });
 
-                user.ProfilePictureDataUrl = profilePictureUrl.Data;
-            }
-            else
-            {
-                user.ProfilePictureDataUrl = null;
-            }
+            //    user.ProfilePictureDataUrl = profilePictureUrl.Data;
+            //}
+            //else
+            //{
+            //    user.ProfilePictureDataUrl = null;
+            //}
 
             var result = await _userManager.UpdateAsync(user);
 
@@ -254,36 +263,9 @@ public class UserService : IUserService
         }
     }
 
-    public async Task SendVerificationEmail(string userEmail, string password, string origin)
+    public Task SendVerificationEmail(string userEmail, string password, string origin)
     {
-        try
-        {
-            var user = await _userManager.FindByEmailAsync(userEmail);
-
-            var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-            code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-
-            var loginPage = "auth/login";
-            var resetUri = new Uri($"{origin}#/");
-            var loginPageUrl = !origin.IsWhiteSpace() ? new Uri($"{origin}#/{loginPage}") : new Uri(loginPage);
-
-            var confirmationLink = $"{resetUri}auth/verify/confirmEmail?userId={user.Id}&code={code}";
-
-            string body = await _emailPopulateBody.PopulateBody("EmailConfirmTemplate.html");
-
-            body = body.Replace("{userName}", user.UserName);
-            body = body.Replace("{password}", password);
-            body = body.Replace("{loginPage}", loginPageUrl.ToString());
-            body = body.Replace("{confirmationLink}", confirmationLink);
-
-            _mailService.SendEmail(new EmailMessage
-            {
-                To = user.Email,
-                Body = body,
-                Subject = "Verification Email"
-            });
-        }
-        catch (Exception ex) { }
+        return Task.CompletedTask;
     }
 
     public async Task<IResult<UserResponse>> GetAsync(Guid userId)
@@ -492,16 +474,16 @@ public class UserService : IUserService
         var resetUri = new Uri($"{origin}#/");
         var confirmationLink = $"{resetUri}auth/verify/verfiyToken?userId={user.Id}&code={code}";
 
-        string body = await _emailPopulateBody.PopulateBody("ForgotPasswordTemplate.html");
-        body = body.Replace("{userName}", user.FirstName + " " + user.LastName);
-        body = body.Replace("{confirmationLink}", confirmationLink);
+        //string body = await _emailPopulateBody.PopulateBody("ForgotPasswordTemplate.html");
+        //body = body.Replace("{userName}", user.FirstName + " " + user.LastName);
+        //body = body.Replace("{confirmationLink}", confirmationLink);
 
-        _mailService.SendEmail(new EmailMessage
-        {
-            To = request.Email,
-            Body = body,
-            Subject = "Password Reset Request"
-        });
+        //_mailService.SendEmail(new EmailMessage
+        //{
+        //    To = request.Email,
+        //    Body = body,
+        //    Subject = "Password Reset Request"
+        //});
 
         return await Result.SuccessAsync(_localizer[MessageConstants.PasswordResetInitiated]);
     }
@@ -530,16 +512,16 @@ public class UserService : IUserService
             user.PasswordHash = _userManager.PasswordHasher.HashPassword(user, request.NewPassword);
 
 
-            string body = await _emailPopulateBody.PopulateBody("ChangedPasswordTemplate.html");
+            //string body = await _emailPopulateBody.PopulateBody("ChangedPasswordTemplate.html");
 
-            body = body.Replace("{userName}", user.FirstName + " " + user.LastName);
+            //body = body.Replace("{userName}", user.FirstName + " " + user.LastName);
 
-            _mailService.SendEmail(new EmailMessage
-            {
-                To = user.Email,
-                Body = body,
-                Subject = "Changed Password Email"
-            });
+            //_mailService.SendEmail(new EmailMessage
+            //{
+            //    To = user.Email,
+            //    Body = body,
+            //    Subject = "Changed Password Email"
+            //});
 
             user.IsActive = true;
             await _userManager.UpdateAsync(user);
@@ -578,27 +560,9 @@ public class UserService : IUserService
         return await _userManager.Users.Where(x => x.TenantId == tenantId).CountAsync();
     }
 
-    public async Task<string> ExportToExcelAsync(string searchString = "")
+    public Task<string> ExportToExcelAsync(string searchString = "")
     {
-        var userSpec = new UserFilterSpecification(searchString);
-        var users = await _userManager.Users.Specify(userSpec).ToListAsync();
-
-        var result = await _excelService.ExportAsync(users, sheetName: _localizer["Users"],
-            mappers: new Dictionary<string, Func<ApplicationUser, object>>
-            {
-                    { _localizer["Id"], item => item.Id },
-                    { _localizer["FirstName"], item => item.FirstName },
-                    { _localizer["LastName"], item => item.LastName },
-                    { _localizer["UserName"], item => item.UserName },
-                    { _localizer["Email"], item => item.Email },
-                    { _localizer["EmailConfirmed"], item => item.EmailConfirmed },
-                    { _localizer["PhoneNumber"], item => item.PhoneNumber },
-                    { _localizer["PhoneNumberConfirmed"], item => item.PhoneNumberConfirmed },
-                    { _localizer["IsActive"], item => item.IsActive },
-                    { _localizer["ProfilePictureDataUrl"], item => item.ProfilePictureDataUrl },
-            });
-
-        return result;
+        return Task.FromResult(string.Empty);
     }
 
     public async Task<IResult> DeleteMultiUser(ActivateDeactivateRequest request)
@@ -724,6 +688,7 @@ public class UserService : IUserService
         return await Result.FailAsync(_localizer["An Error has occurred!"]);
     }
 
+
     public async Task<PaginatedResult<UserListResponse>> GetUsers(UserPagedRequest request)
     {
         var tenantId = GetTenantId();
@@ -755,6 +720,22 @@ public class UserService : IUserService
         return userList;
     }
 
+    public async Task<PaginatedResult<UserResponse>> GetUserByFilter(GridArgument gridArgument)
+{
+    var tenantId = GetTenantId();
+
+    var usersQuery = _userManager.Users
+        .Where(x => !x.IsDeleted && x.TenantId == tenantId);
+
+    var paginatedResult = await usersQuery.ToPaginatedListAsync(
+        gridArgument.PageNumber,
+        gridArgument.PageSize);
+
+    var mappedResult = _mapper.Map<PaginatedResult<UserResponse>>(paginatedResult);
+
+    return mappedResult;
+}
+
     public async Task<IResult<UserResponse>> UpdateUserDetail(UpdatePersonalDetailRequest request)
     {
         try
@@ -771,17 +752,17 @@ public class UserService : IUserService
             user.Description = request.Description ?? user.Description;
             user.TimeZone = request.TimeZone ?? user.TimeZone;
             string profileImageName = string.Empty;
-            if (request.ProfilePicture?.FileName != null)
-            {
-                var profilePictureUrl = await _uploadService.UploadAsync(new UploadRequest
-                {
-                    Path = FileUploadUrl.Profile,
-                    FileBytes = request.ProfilePicture.Content,
-                    FileName = request.ProfilePicture.FileName
-                });
+            //if (request.ProfilePicture?.FileName != null)
+            //{
+            //    var profilePictureUrl = await _uploadService.UploadAsync(new UploadRequest
+            //    {
+            //        Path = FileUploadUrl.Profile,
+            //        FileBytes = request.ProfilePicture.Content,
+            //        FileName = request.ProfilePicture.FileName
+            //    });
 
-                user.ProfilePictureDataUrl = profilePictureUrl.Data;
-            }
+            //    user.ProfilePictureDataUrl = profilePictureUrl.Data;
+            //}
 
             var result = await _userManager.UpdateAsync(user);
             await _unitOfWork.SaveAsync();
@@ -1090,28 +1071,28 @@ public class UserService : IUserService
         return await Result<bool>.SuccessAsync(false);
     }
 
-    Task<IResult<Application.Responses.Users.UserResponse>> IUserService.RegisterUser(RegisterRequest request)
-    {
-        throw new NotImplementedException();
-    }
+    //Task<IResult<Application.Responses.Users.UserResponse>> IUserService.RegisterUser(RegisterRequest request)
+    //{
+    //    throw new NotImplementedException();
+    //}
 
-    Task<IResult<Application.Responses.Users.UserResponse>> IUserService.UpdateUserDetail(UpdatePersonalDetailRequest request)
-    {
-        throw new NotImplementedException();
-    }
+    //Task<IResult<Application.Responses.Users.UserResponse>> IUserService.UpdateUserDetail(UpdatePersonalDetailRequest request)
+    //{
+    //    throw new NotImplementedException();
+    //}
 
-    Task<Result<List<Application.Responses.Users.UserResponse>>> IUserService.GetAllAsync()
-    {
-        throw new NotImplementedException();
-    }
+    //Task<Result<List<Application.Responses.Users.UserResponse>>> IUserService.GetAllAsync()
+    //{
+    //    throw new NotImplementedException();
+    //}
 
-    Task<IResult<Application.Responses.Users.UserResponse>> IUserService.GetAsync(Guid userId)
-    {
-        throw new NotImplementedException();
-    }
+    //Task<IResult<Application.Responses.Identity.UserResponse>> IUserService.GetAsync(Guid userId)
+    //{
+    //    throw new NotImplementedException();
+    //}
 
-    public Task<PaginatedResult<Application.Responses.Users.UserResponse>> GetUserByFilter(GridArgument gridArgument)
-    {
-        throw new NotImplementedException();
-    }
+    //public Task<PaginatedResult<Application.Responses.Users.UserResponse>> GetUserByFilter(GridArgument gridArgument)
+    //{
+    //    throw new NotImplementedException();
+    //}
 }

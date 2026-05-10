@@ -6,7 +6,7 @@ using Byohar.Domain.Entities.Identity;
 using Byohar.Infrastructure.Extensions;
 using Byohar.Infrastructure.Helpers;
 using Byohar.Infrastructure.Specifications;
-using Byohar.Persistence.Contexts;
+using Byohar.Persistance.Contexts;
 using Byohar.Shared.Wrapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
