@@ -1,7 +1,7 @@
 ﻿using Byohar.Application.Interfaces.Persistence;
 using Byohar.Domain.Entities.Identity;
 using Byohar.Infrastructure.Repositories;
-using Byohar.Persistence.Contexts;
+using Byohar.Persistance.Contexts;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 

@@ -2,12 +2,13 @@
 using Byohar.Application.Interfaces.User;
 using Byohar.Domain.Common;
 using Byohar.Domain.Entities.Identity;
+using Byohar.Domain.Entities.Tenant;
 using Byohar.Persistance.Contexts;
 using Byohar.Persistence.Extensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
-namespace Byohar.Persistence.Contexts
+namespace Byohar.Persistance.Contexts
 {
     public class ApplicationDbContext : AuditableContext
     {
@@ -29,6 +30,8 @@ namespace Byohar.Persistence.Contexts
         public DbSet<Permission> Permissions { get; set; }
         public DbSet<RolePermission> RolePermissions { get; set; }
         public DbSet<UserPermission> UserPermissions { get; set; }
+
+        public DbSet<Tenant> Tenants { get; set; }
 
         #endregion
 
@@ -88,7 +91,7 @@ namespace Byohar.Persistence.Contexts
         //    {
         //        return await base.SaveChangesAsync(cancellationToken);
         //    }
-            
+
         //}
 
         protected override void OnModelCreating(ModelBuilder builder)

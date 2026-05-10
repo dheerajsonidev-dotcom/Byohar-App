@@ -2,6 +2,7 @@
 using Byohar.Application.Identity;
 using Byohar.Application.Requests.Identity;
 using Byohar.Application.Requests.Tenant;
+using Byohar.Application.Responses;
 using Byohar.Application.Responses.Identity;
 using Byohar.Domain.Entities.Identity;
 using Byohar.Domain.Entities.Tenant;
@@ -12,16 +13,16 @@ public class EntitiesProfile : Profile
 {
     public EntitiesProfile()
     {
-       
 
-       
 
-       
 
-       
+
+
+
+
 
         #region Users
-
+        CreateMap<ApplicationUser, UserResponse>();
         CreateMap<ApplicationUser, UserListResponse>()
         .ForMember(x => x.Roles,
             src => src.MapFrom(x =>

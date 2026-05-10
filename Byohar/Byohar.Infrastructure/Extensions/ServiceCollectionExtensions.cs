@@ -25,10 +25,10 @@ namespace Byohar.Infrastructure.Extensions
             services.AddTransient<IAccountService, AccountService>();
             services.AddTransient<IUserService, UserService>();
             services.AddSingleton<IEmailSender, EmailSender>();
-          
 
 
-            services.AddAutoMapper(Assembly.GetExecutingAssembly());
+
+            services.AddAutoMapper(cfg => { }, Assembly.GetExecutingAssembly());
 
             return services;
         }
