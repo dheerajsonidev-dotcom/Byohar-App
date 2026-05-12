@@ -23,6 +23,7 @@ namespace Byohar.Infrastructure.Extensions
             services.AddTransient<ITokenService, IdentityService>();
             services.AddTransient<IRoleService, RoleService>();
             services.AddTransient<IAccountService, AccountService>();
+            services.AddTransient<IOwnerAuthService, OwnerAuthService>();
             services.AddTransient<IUserService, UserService>();
             services.AddSingleton<IEmailSender, EmailSender>();
 
