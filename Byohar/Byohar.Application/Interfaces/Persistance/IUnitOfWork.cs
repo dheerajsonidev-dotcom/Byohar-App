@@ -1,6 +1,6 @@
 ﻿using Byohar.Domain.Common;
 
-namespace Byohar.Application.Interfaces.Persistence;
+namespace Byohar.Application.Interfaces.Persistance;
 
 public interface IUnitOfWork : IDisposable
 {

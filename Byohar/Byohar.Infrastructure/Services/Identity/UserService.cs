@@ -6,7 +6,7 @@ using Byohar.Application.Interfaces.Common;
 using Byohar.Application.Interfaces.Email;
 using Byohar.Application.Interfaces.Email.IEmailPopulate;
 using Byohar.Application.Interfaces.Identity;
-using Byohar.Application.Interfaces.Persistence;
+using Byohar.Application.Interfaces.Persistance;
 using Byohar.Application.Interfaces.User;
 using Byohar.Application.Models.Email;
 using Byohar.Application.Requests.Identity;

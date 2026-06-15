@@ -1,4 +1,4 @@
-﻿using Byohar.Application.Interfaces.Persistence;
+﻿using Byohar.Application.Interfaces.Persistance;
 using Byohar.Domain.Common;
 using Byohar.Persistance.Contexts;
 using Microsoft.AspNetCore.Http;

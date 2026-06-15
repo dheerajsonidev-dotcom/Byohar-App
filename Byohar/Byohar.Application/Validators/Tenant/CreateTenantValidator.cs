@@ -1,4 +1,4 @@
-﻿using Byohar.Application.Interfaces.Persistence;
+﻿using Byohar.Application.Interfaces.Persistance;
 using Byohar.Application.Requests.Tenant;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;

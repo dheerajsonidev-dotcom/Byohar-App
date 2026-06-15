@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using Byohar.Application.Interfaces.Common;
 using Byohar.Application.Interfaces.Identity;
-using Byohar.Application.Interfaces.Persistence;
+using Byohar.Application.Interfaces.Persistance;
 using Byohar.Application.Interfaces.User;
 using Byohar.Application.Requests.Identity;
 using Byohar.Application.Requests.Tenant;

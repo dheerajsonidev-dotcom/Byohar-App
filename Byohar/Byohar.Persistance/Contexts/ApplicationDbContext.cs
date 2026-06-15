@@ -1,6 +1,7 @@
 ﻿using Byohar.Application.Interfaces.Common;
 using Byohar.Application.Interfaces.User;
 using Byohar.Domain.Common;
+using Byohar.Domain.Entities.Events;
 using Byohar.Domain.Entities.Identity;
 using Byohar.Domain.Entities.Tenant;
 using Byohar.Persistance.Contexts;
@@ -32,6 +33,7 @@ namespace Byohar.Persistance.Contexts
         public DbSet<UserPermission> UserPermissions { get; set; }
 
         public DbSet<Tenant> Tenants { get; set; }
+        public DbSet<Event> Events { get; set; }
 
         #endregion
 
