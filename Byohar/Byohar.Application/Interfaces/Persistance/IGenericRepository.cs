@@ -1,6 +1,6 @@
 ﻿using System.Linq.Expressions;
 
-namespace Byohar.Application.Interfaces.Persistence;
+namespace Byohar.Application.Interfaces.Persistance;
 
 public interface IGenericRepository<T> where T : class
 {

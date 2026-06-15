@@ -1,11 +1,15 @@
 ﻿using AutoMapper;
 using Byohar.Application.Identity;
+using Byohar.Application.Requests.Events;
 using Byohar.Application.Requests.Identity;
 using Byohar.Application.Requests.Tenant;
 using Byohar.Application.Responses;
+using Byohar.Application.Responses.Events;
 using Byohar.Application.Responses.Identity;
+using Byohar.Domain.Entities.Events;
 using Byohar.Domain.Entities.Identity;
 using Byohar.Domain.Entities.Tenant;
+using Byohar.Shared.Wrapper;
 
 namespace Byohar.Application.Mappings;
 
@@ -56,14 +60,23 @@ public class EntitiesProfile : Profile
         CreateMap<UserPermissionRequest, UserPermission>();
         #endregion
 
-       
+        #region Event
+
+        CreateMap<EventRequest, Event>();
+
+        CreateMap<Event, EventResponse>();
+
+        CreateMap<PaginatedResult<Event>,
+            PaginatedResult<EventResponse>>();
+
+        #endregion
 
 
-      
-        
 
-       
-       
+
+
+
+
 
 
         #region Tenant

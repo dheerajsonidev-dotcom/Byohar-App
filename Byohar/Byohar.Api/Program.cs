@@ -7,6 +7,7 @@ using Byohar.Domain.Entities.Identity;
 using Byohar.Infrastructure.Extensions;
 using Byohar.Infrastructure.Services.Common;
 using Byohar.Persistance.Contexts;
+using Byohar.Persistence.Seeder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,7 +16,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 
 // Layers
-//builder.Services.AddApplicationLayer();
+builder.Services.AddApplicationLayer();
 builder.Services.AddInfrastructureServices();
 builder.Services.AddRepositories();
 
@@ -36,6 +37,7 @@ builder.Services.AddDistributedMemoryCache();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 builder.Services.AddTransient<IDateTimeService, DateTimeService>();
+builder.Services.AddScoped<IDatabaseSeeder, DatabaseSeeder>();
 
 
 // Swagger

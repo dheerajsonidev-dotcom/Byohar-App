@@ -1,4 +1,4 @@
-﻿using Byohar.Application.Interfaces.Persistence;
+﻿using Byohar.Application.Interfaces.Persistance;
 using Byohar.Domain.Entities.Identity;
 using Byohar.Infrastructure.Repositories;
 using Byohar.Persistance.Contexts;

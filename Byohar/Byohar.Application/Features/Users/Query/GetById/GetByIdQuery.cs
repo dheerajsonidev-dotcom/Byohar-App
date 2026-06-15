@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Byohar.Application.Interfaces.Persistence;
+using Byohar.Application.Interfaces.Persistance;
 using Byohar.Application.Responses;
 using Byohar.Domain.Entities.Identity;
 using Byohar.Shared.Wrapper;
