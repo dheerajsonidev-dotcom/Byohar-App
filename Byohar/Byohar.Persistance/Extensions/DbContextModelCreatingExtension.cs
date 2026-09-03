@@ -62,7 +62,7 @@ namespace Byohar.Persistence.Extensions
 
             #endregion
 
-
+         
             #region Address
 
 
@@ -144,7 +144,7 @@ namespace Byohar.Persistence.Extensions
 
 
 
-
+          
 
             foreach (var entityType in builder.Model.GetEntityTypes())
             {
