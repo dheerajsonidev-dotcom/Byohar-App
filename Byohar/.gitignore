@@ -1,0 +1,4 @@
+.local-tools/
+**/bin/
+**/obj/
+.vs/

@@ -38,7 +38,8 @@ public class UpdateEventCommandHandler
         {
             var repo = _unitOfWork.Repository<Event>();
 
-            var entity = await repo.GetByIdAsync(request.Id);
+            // Filter ownership in SQL using the mapped Event.TenantId property.
+            var entity = await repo.Entities().FirstOrDefaultAsync(x => x.Id == request.Id, ct);
 
             if (entity == null)
             {

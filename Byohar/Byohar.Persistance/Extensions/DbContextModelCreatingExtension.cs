@@ -1,4 +1,6 @@
-﻿using Byohar.Domain.Entities.Identity;
+﻿using Byohar.Domain.Entities.Addresses;
+using Byohar.Domain.Entities.Guests;
+using Byohar.Domain.Entities.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
@@ -6,7 +8,7 @@ namespace Byohar.Persistence.Extensions
 {
     public static class DbContextModelCreatingExtension
     {
-        public static void ConfigureConnexus(this ModelBuilder builder)
+        public static void ConfigureByohar(this ModelBuilder builder)
         {
             foreach (var property in builder.Model.GetEntityTypes()
 
@@ -60,9 +62,89 @@ namespace Byohar.Persistence.Extensions
 
             #endregion
 
-         
 
-          
+            #region Address
+
+
+            builder.Entity<Address>(b =>
+            {
+                b.ToTable("Addresses");
+
+                b.HasKey(x => x.Id);
+
+                b.Property(x => x.AddressLine1)
+                    .HasMaxLength(250);
+
+                b.Property(x => x.AddressLine2)
+                    .HasMaxLength(250);
+
+                b.Property(x => x.City)
+                    .HasMaxLength(100);
+
+                b.Property(x => x.State)
+                    .HasMaxLength(100);
+
+                b.Property(x => x.PinCode)
+                    .HasMaxLength(20);
+
+                b.Property(x => x.Country)
+                    .HasMaxLength(100)
+                    .HasDefaultValue("India");
+            });
+
+            #endregion
+
+            #region Guest
+
+            builder.Entity<Guest>(b =>
+            {
+
+
+
+
+
+
+
+
+
+                b.ToTable("Guests");
+
+                b.HasKey(x => x.Id);
+
+                b.Property(x => x.FirstName)
+                    .HasMaxLength(150)
+                    .IsRequired();
+
+                b.Property(x => x.LastName)
+                    .HasMaxLength(150);
+
+                b.Property(x => x.MobileNumber)
+                    .HasMaxLength(20);
+
+                b.Property(x => x.Relation)
+                    .HasMaxLength(100);
+
+                b.Property(x => x.TotalMembers)
+                    .HasDefaultValue(1);
+
+                b.Property(x => x.IsActive)
+                    .HasDefaultValue(true);
+
+                b.HasIndex(x => x.EventId);
+
+                b.HasIndex(x => x.MobileNumber);
+
+                b.HasOne(x => x.Address)
+                    .WithMany()
+                    .HasForeignKey(x => x.AddressId)
+                    .OnDelete(DeleteBehavior.Restrict);
+            });
+
+#endregion
+
+
+
+
 
             foreach (var entityType in builder.Model.GetEntityTypes())
             {

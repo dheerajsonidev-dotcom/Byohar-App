@@ -9,6 +9,7 @@ namespace Byohar.Api.Controllers.Events;
 
 [Route("api/[controller]")]
 [ApiController]
+[Microsoft.AspNetCore.Authorization.Authorize]
 public class EventController : BaseApiController<EventController>
 {
   
@@ -20,8 +21,11 @@ public class EventController : BaseApiController<EventController>
     }
 
     [HttpPut("update/{id}")]
-    public async Task<IActionResult> Update( UpdateEventCommand command)
+    public async Task<IActionResult> Update(Guid id, [FromBody] UpdateEventCommand command)
     {
+        if (command.Id != Guid.Empty && command.Id != id)
+            return BadRequest(new { messages = new[] { "Route and body event IDs must match." } });
+        command.Id = id;
         return Ok(await _mediator.Send(command));
     }
 

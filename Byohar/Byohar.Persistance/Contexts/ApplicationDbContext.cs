@@ -1,7 +1,9 @@
 ﻿using Byohar.Application.Interfaces.Common;
 using Byohar.Application.Interfaces.User;
 using Byohar.Domain.Common;
+using Byohar.Domain.Entities.Addresses;
 using Byohar.Domain.Entities.Events;
+using Byohar.Domain.Entities.Guests;
 using Byohar.Domain.Entities.Identity;
 using Byohar.Domain.Entities.Tenant;
 using Byohar.Persistance.Contexts;
@@ -36,6 +38,40 @@ namespace Byohar.Persistance.Contexts
         public DbSet<Event> Events { get; set; }
 
         #endregion
+
+
+        public DbSet<Guest> Guests { get; set; }
+        public DbSet<Address> Addresses { get; set; }
+
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            foreach (var entry in ChangeTracker.Entries().Where(e =>
+                (e.Entity is Event or Guest or Address) &&
+                (e.State == EntityState.Added || e.State == EntityState.Modified)))
+            {
+                var tenantId = GetTenantId()
+                    ?? throw new InvalidOperationException("An authenticated wedding owner is required.");
+                var audit = (IAuditableEntity)entry.Entity;
+                if (entry.State == EntityState.Added)
+                {
+                    audit.TenantId = tenantId;
+                    entry.Property("TenantId").CurrentValue = tenantId;
+                    audit.CreatedOn = _dateTimeService.NowUtc;
+                    audit.CreatedBy = _currentUserService.UserId ?? string.Empty;
+                }
+                else
+                {
+                    if (!Equals(entry.Property("TenantId").OriginalValue, tenantId))
+                        throw new InvalidOperationException("This record belongs to another owner.");
+                    entry.Property("TenantId").CurrentValue = tenantId;
+                    audit.LastModifiedOn = _dateTimeService.NowUtc;
+                    audit.LastModifiedBy = _currentUserService.UserId;
+                }
+            }
+            return base.SaveChangesAsync(cancellationToken);
+        }
+
+
 
         //public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new())
         //{
@@ -100,7 +136,7 @@ namespace Byohar.Persistance.Contexts
         {
             base.OnModelCreating(builder);
 
-            builder.ConfigureConnexus();
+            builder.ConfigureByohar();
         }
 
         private TimeSpan GetTimezoneOffset()

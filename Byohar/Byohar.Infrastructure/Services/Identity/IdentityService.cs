@@ -109,6 +109,18 @@ public class IdentityService : ITokenService
 
     public async Task<Result<TokenResponse>> RemoveRefereshToken(RefreshTokenRequest model)
     {
+        if (model == null || string.IsNullOrEmpty(model.Token) || string.IsNullOrEmpty(model.RefreshToken))
+            return await Result<TokenResponse>.FailAsync("Invalid session.");
+        ClaimsPrincipal principal;
+        try { principal = GetPrincipalFromExpiredToken(model.Token); }
+        catch { return await Result<TokenResponse>.FailAsync("Invalid session."); }
+        var user = await _userManager.FindByIdAsync(principal.FindFirstValue(ClaimTypes.NameIdentifier));
+        if (user == null || user.RefreshToken != model.RefreshToken)
+            return await Result<TokenResponse>.FailAsync("Invalid session.");
+        user.RefreshToken = null;
+        user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(-1);
+        var update = await _userManager.UpdateAsync(user);
+        if (!update.Succeeded) return await Result<TokenResponse>.FailAsync("Could not end the session.");
         await _signInManager.SignOutAsync();
 
         var response = new TokenResponse { Token = null, RefreshToken = null, RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(-1) };

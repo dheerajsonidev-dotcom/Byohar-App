@@ -10,6 +10,7 @@ using Byohar.Persistance.Contexts;
 using Byohar.Persistence.Seeder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Byohar.Api.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,6 +32,9 @@ builder.Services.AddIdentity<ApplicationUser, Role>()
 
 builder.Services.Configure<AppConfiguration>(
     builder.Configuration.GetSection("JWTSettings"));
+builder.Services.AddJwtAuthentication(
+    builder.Configuration.GetSection("JWTSettings").Get<AppConfiguration>()
+    ?? throw new InvalidOperationException("JWTSettings are required."));
 
 // Common services
 builder.Services.AddDistributedMemoryCache();
@@ -42,7 +46,19 @@ builder.Services.AddScoped<IDatabaseSeeder, DatabaseSeeder>();
 
 // Swagger
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.OpenApiSecurityScheme
+    {
+        Type = Microsoft.OpenApi.SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT"
+    });
+    c.AddSecurityRequirement(document => new Microsoft.OpenApi.OpenApiSecurityRequirement
+    {
+        [new Microsoft.OpenApi.OpenApiSecuritySchemeReference("Bearer", document)] = []
+    });
+});
 
 builder.Services.AddCors(options =>
 {
@@ -50,8 +66,8 @@ builder.Services.AddCors(options =>
     {
         policy
             .SetIsOriginAllowed(origin =>
-                origin.StartsWith("http://localhost") ||
-                origin.StartsWith("https://localhost"))
+                Uri.TryCreate(origin, UriKind.Absolute, out var uri) &&
+                uri.IsLoopback && (uri.Scheme == "http" || uri.Scheme == "https"))
             .AllowAnyHeader()
             .AllowAnyMethod();
     });
@@ -65,9 +81,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+if (!app.Environment.IsDevelopment()) app.UseHttpsRedirection();
 app.UseCors("AllowFlutterWeb");
 app.UseAuthentication();
+app.UseMiddleware<Byohar.Api.Middlewares.TenantIdMiddleware>();
 app.UseAuthorization();
 
 app.MapControllers();
